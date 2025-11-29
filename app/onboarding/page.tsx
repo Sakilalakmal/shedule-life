@@ -14,7 +14,7 @@ import { OnBoardingAction } from "./actions";
 
 export default function OnboardingPage() {
   const [lastResult, action] = useActionState(OnBoardingAction, undefined);
-  const [form , fields] = useForm 
+
 
   return (
     <div className="min-h-screen w-screen flex items-center justify-center">
