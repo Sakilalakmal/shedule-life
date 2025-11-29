@@ -5,6 +5,8 @@ export default async function DashBoardPage() {
   const session = await requiredAuthUser();
 
   return (
-    <div></div>
+    <div>
+      dashboard
+    </div>
   );
 }
