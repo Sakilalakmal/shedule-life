@@ -1,9 +1,17 @@
-import Image from "next/image";
+import { auth } from "@/auth";
+import { Navbar } from "./components/NavBar";
+import { redirect } from "next/navigation";
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth();
+
+  if (session?.user) {
+    return redirect("/dashboard");
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-     <h1>Shedule life</h1>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Navbar />
     </div>
   );
 }
