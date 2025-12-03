@@ -68,6 +68,7 @@ export default function OnboardingPage() {
                   defaultValue={fields.username.initialValue}
                   key={fields.username.key}
                 />
+                {/* // TODO format error message in here and above*/}
                 <p className="text-red-500 text-sm">{fields.username.errors}</p>
               </div>
             </div>
