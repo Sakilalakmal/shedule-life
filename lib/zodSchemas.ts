@@ -54,3 +54,14 @@ export const settingSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
   profileImage: z.string(),
 });
+
+export const eventTypeSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  duration: z
+    .number()
+    .min(15, "Duration is required")
+    .max(60, "Maximum duration is  one hour"),
+  description: z.string().optional(),
+  url: z.string().min(1, "URL is required"),
+  videoCallSoftware: z.string().min(1, "Video call software is required"),
+});
