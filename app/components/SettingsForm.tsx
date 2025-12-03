@@ -19,6 +19,8 @@ import { parseWithZod } from "@conform-to/zod";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
+import { UploadDropzone } from "../lib/uploadthing";
+import { toast } from "sonner";
 
 interface SettingsFormProps {
   fullName?: string;
@@ -80,6 +82,12 @@ export function SettingsForm({
 
           <div className="grid gapy-2">
             <Label>Profile Image</Label>
+            <Input
+              type="hidden"
+              name={fields.profileImage.name}
+              key={fields.profileImage.key}
+              value={currentProfileImage}
+            />
             {currentProfileImage ? (
               <div className="relative size-16 m-4">
                 <Image
@@ -99,8 +107,19 @@ export function SettingsForm({
                 </Button>
               </div>
             ) : (
-              <p>No profile image</p>
+              <UploadDropzone
+                endpoint={"imageUploader"}
+                onClientUploadComplete={(res) => {
+                  setCurrentProfileImage(res[0].ufsUrl);
+                  toast.success("Profile image uploaded successfully!");
+                }}
+                onUploadError={(error) => {
+                  console.log("error while uploading error", error);
+                  toast.error(`Failed to upload image: ${error.message}`);
+                }}
+              />
             )}
+            <p className="text-red-500 text-sm">{fields.profileImage.errors}</p>
           </div>
         </CardContent>
         <CardFooter className="mt-4">
