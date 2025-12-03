@@ -2,6 +2,7 @@
 "use server";
 
 import {
+  eventTypeSchema,
   onBoardingSchema,
   onBoardingSchemaValidations,
   settingSchema,
@@ -11,6 +12,7 @@ import { requiredAuthUser } from "../lib/hook";
 import { parseWithZod } from "@conform-to/zod";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { parse } from "path";
 
 export async function OnBoardingAction(prevState: any, formData: FormData) {
   const user = await requiredAuthUser();
@@ -115,7 +117,7 @@ export async function SettingsUpdateAction(prevState: any, formData: FormData) {
   return redirect("/dashboard");
 }
 
-export async function updateAvailability( formData: FormData) {
+export async function updateAvailability(formData: FormData) {
   const session = await requiredAuthUser();
 
   const rawData = Object.fromEntries(formData.entries());
@@ -153,4 +155,29 @@ export async function updateAvailability( formData: FormData) {
   } catch (error) {
     console.error("Failed to update availability:", error);
   }
+}
+
+export async function createEventType(prevState: any, formData: FormData) {
+  const session = await requiredAuthUser();
+
+  const submission = parseWithZod(formData, {
+    schema: eventTypeSchema,
+  });
+
+  if (submission.status !== "success") {
+    return submission.reply();
+  }
+
+  await prisma.eventType.create({
+    data: {
+      title: submission.value.title,
+      duration: submission.value.duration,
+      url: submission.value.url,
+      videoCallSoftware: submission.value.videoCallSoftware,
+      userId: session.user?.id as string,
+      description: submission.value.description || "",
+    },
+  });
+
+  return redirect("/dashboard");
 }
