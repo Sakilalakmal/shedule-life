@@ -1,3 +1,5 @@
+import { conformZodMessage } from "@conform-to/zod";
+import { unique } from "next/dist/build/utils";
 import { z } from "zod";
 
 export const onBoardingSchema = z.object({
@@ -10,3 +12,40 @@ export const onBoardingSchema = z.object({
       "Username can only contain letters, numbers, and underscores"
     ),
 });
+
+export function onBoardingSchemaValidations(options?: {
+  isUsernameUnique: () => Promise<boolean>;
+}) {
+  return z.object({
+    username: z
+      .string()
+      .min(3, "Username must be at least 3 characters long")
+      .regex(
+        /^[a-zA-Z0-9_]+$/,
+        "Username can only contain letters, numbers, and underscores"
+      )
+      .pipe(
+        z.string().superRefine((_, ctx) => {
+          if (typeof options?.isUsernameUnique !== "function") {
+            ctx.addIssue({
+              code: "custom",
+              message: conformZodMessage.VALIDATION_UNDEFINED,
+              fatal: true,
+            });
+
+            return;
+          }
+
+          return options.isUsernameUnique().then((isUnique) => {
+            if (!isUnique) {
+              ctx.addIssue({
+                code: "custom",
+                message: "Username is already taken",
+              });
+            }
+          });
+        })
+      ),
+    fullName: z.string().min(1, "Full name is required"),
+  });
+}

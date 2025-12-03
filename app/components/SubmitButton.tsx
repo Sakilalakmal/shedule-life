@@ -1,9 +1,11 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { Loader } from "lucide-react";
 import { SVGProps } from "react";
 import { useFormStatus } from "react-dom";
+import { text } from "stream/consumers";
 
 // Google SVG as React component
 const Google = (props: SVGProps<SVGSVGElement>) => (
@@ -265,6 +267,51 @@ const GitHub = (props: SVGProps<SVGSVGElement>) => (
 export { GitHub };
 
 export { Google };
+
+interface SubmitButtonProps {
+  text: string;
+  variant?:
+    | "link"
+    | "default"
+    | "destructive"
+    | "outline"
+    | "secondary"
+    | "ghost"
+    | null
+    | undefined;
+  className?: string;
+}
+
+export function SubmitButton({ text, variant, className }: SubmitButtonProps) {
+  const { pending } = useFormStatus();
+
+  return (
+    <>
+      {pending ? (
+        <>
+          <Button
+            disabled
+            variant={"outline"}
+            className={cn("w-full", className)}
+          >
+            <Loader className="size-4 animate-spin" />
+            Wait...
+          </Button>
+        </>
+      ) : (
+        <>
+          <Button
+            type="submit"
+            variant={variant}
+            className={cn("w-full", className)}
+          >
+            {text}
+          </Button>
+        </>
+      )}
+    </>
+  );
+}
 
 export function GoogleAuthSubmitButton() {
   const { pending } = useFormStatus();

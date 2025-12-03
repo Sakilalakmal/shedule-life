@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,10 +13,24 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useActionState } from "react";
 import { OnBoardingAction } from "./actions";
+import { useForm } from "@conform-to/react";
+import { parseWithZod } from "@conform-to/zod";
+import { onBoardingSchema } from "@/lib/zodSchemas";
+import { SubmitButton } from "../components/SubmitButton";
 
 export default function OnboardingPage() {
   const [lastResult, action] = useActionState(OnBoardingAction, undefined);
 
+  const [form, fields] = useForm({
+    lastResult: lastResult && "status" in lastResult ? lastResult : undefined,
+    onValidate({ formData }: { formData: FormData }) {
+      return parseWithZod(formData, {
+        schema: onBoardingSchema,
+      });
+    },
+    shouldValidate: "onBlur",
+    shouldRevalidate: "onInput",
+  });
 
   return (
     <div className="min-h-screen w-screen flex items-center justify-center">
@@ -27,11 +43,17 @@ export default function OnboardingPage() {
             Please provide following information to setup your profile
           </CardDescription>
         </CardHeader>
-        <form>
+        <form id={form.id} onSubmit={form.onSubmit} action={action} noValidate>
           <CardContent className="flex flex-col gap-y-5">
             <div className="grid gap-y-2">
               <Label>Full Name</Label>
-              <Input placeholder="Sakila lakmal" />
+              <Input
+                placeholder="Sakila lakmal"
+                name={fields.fullName.name}
+                defaultValue={fields.fullName.initialValue}
+                key={fields.fullName.key}
+              />
+              <p className="text-red-500 text-sm">{fields.fullName.errors}</p>
             </div>
             <div className="grid gap-y-2">
               <Label>Username</Label>
@@ -42,13 +64,17 @@ export default function OnboardingPage() {
                 <Input
                   placeholder="example-user-1"
                   className="rounded-l-none"
+                  name={fields.username.name}
+                  defaultValue={fields.username.initialValue}
+                  key={fields.username.key}
                 />
+                <p className="text-red-500 text-sm">{fields.username.errors}</p>
               </div>
             </div>
           </CardContent>
 
           <CardFooter>
-            <Button className="w-full">Submit</Button>
+            <SubmitButton text="Submit" className="mt-4" />
           </CardFooter>
         </form>
       </Card>

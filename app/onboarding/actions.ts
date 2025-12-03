@@ -1,15 +1,32 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
-import { onBoardingSchema } from "@/lib/zodSchemas";
+import {
+  onBoardingSchema,
+  onBoardingSchemaValidations,
+} from "@/lib/zodSchemas";
 import { prisma } from "../lib/db";
 import { requiredAuthUser } from "../lib/hook";
 import { parseWithZod } from "@conform-to/zod";
+import { redirect } from "next/navigation";
 
 export async function OnBoardingAction(prevState: any, formData: FormData) {
   const user = await requiredAuthUser();
 
-  const submission = parseWithZod(formData, {
-    schema: onBoardingSchema,
+  const submission = await parseWithZod(formData, {
+    schema: onBoardingSchemaValidations({
+      async isUsernameUnique() {
+        const existingUsername = await prisma.user.findUnique({
+          where: {
+            userName: formData.get("username") as string,
+          },
+        });
+
+        return !existingUsername;
+      },
+    }),
+
+    async: true,
   });
 
   if (submission.status !== "success") {
@@ -28,5 +45,5 @@ export async function OnBoardingAction(prevState: any, formData: FormData) {
     },
   });
 
-  return data;
+  return redirect("/dashboard");
 }
