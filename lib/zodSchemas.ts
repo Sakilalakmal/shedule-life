@@ -49,3 +49,8 @@ export function onBoardingSchemaValidations(options?: {
     fullName: z.string().min(1, "Full name is required"),
   });
 }
+
+export const settingSchema = z.object({
+  fullName: z.string().min(1, "Full name is required"),
+  profileImage: z.string(),
+});
