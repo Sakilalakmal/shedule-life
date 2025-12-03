@@ -4,6 +4,7 @@
 import {
   onBoardingSchema,
   onBoardingSchemaValidations,
+  settingSchema,
 } from "@/lib/zodSchemas";
 import { prisma } from "../lib/db";
 import { requiredAuthUser } from "../lib/hook";
@@ -46,4 +47,28 @@ export async function OnBoardingAction(prevState: any, formData: FormData) {
   });
 
   return redirect("/onboarding/grant-id");
+}
+
+export async function SettingsUpdateAction(prevState: any, formData: FormData) {
+  const session = await requiredAuthUser();
+
+  const submission = parseWithZod(formData, {
+    schema: settingSchema,
+  });
+
+  if (submission.status !== "success") {
+    return submission.reply();
+  }
+
+  const user = await prisma.user.update({
+    where: {
+      id: session.user?.id,
+    },
+    data: {
+      name: submission.value.fullName,
+      image: submission.value.profileImage,
+    },
+  });
+
+  return redirect("/dashboard");
 }
