@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { url } from "inspector";
+import { CopyLink } from "../components/CopyLink";
 
 async function getData(userId: string) {
   const data = await prisma.user.findUnique({
@@ -95,9 +96,10 @@ export default async function DashBoardPage() {
                             Preview
                           </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Link2 className="size-4" />
-                          Copy
+                        <DropdownMenuItem asChild>
+                          <CopyLink
+                            meetingUrl={`${process.env.NEXT_PUBLIC_URL}/${data.userName}/${event.url}`}
+                          />
                         </DropdownMenuItem>
                         <DropdownMenuItem>
                           <Pen className="size-4" />
