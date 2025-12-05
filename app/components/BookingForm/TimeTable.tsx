@@ -11,6 +11,7 @@ import { GetFreeBusyResponse, NylasResponse } from "nylas";
 interface TimeTableProps {
   selectedDate: string;
   username: string;
+  duration: number;
 }
 
 function calculateAvailableTimeSlots(
@@ -224,7 +225,11 @@ async function getData(username: string, selectedDate: Date) {
   };
 }
 
-export async function TimeTable({ selectedDate, username }: TimeTableProps) {
+export async function TimeTable({
+  selectedDate,
+  username,
+  duration,
+}: TimeTableProps) {
   const { data, nylasCalendarData } = await getData(
     username,
     new Date(selectedDate)
@@ -253,7 +258,7 @@ export async function TimeTable({ selectedDate, username }: TimeTableProps) {
     formattedDate,
     dbAvailability,
     nylasCalendarData,
-    30 // assuming a fixed duration of 30 minutes for simplicity
+    duration // assuming a fixed duration of 30 minutes for simplicity
   );
 
   return (
@@ -264,7 +269,7 @@ export async function TimeTable({ selectedDate, username }: TimeTableProps) {
           availableTimeSlots.map((slot, index) => (
             <Link
               key={index}
-              href="/"
+              href={`?date=${format(selectedDate, "yyyy-MM-dd")}&time=${slot}`}
               className="block p-2 mb-2 border rounded hover:bg-primary/10"
             >
               {slot}
