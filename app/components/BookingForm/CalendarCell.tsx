@@ -13,22 +13,17 @@ export function CalendarCell({
   state,
   date,
   currentMonth,
+  isUnavailable,
 }: {
   state: CalendarState;
   date: CalendarDate;
   currentMonth?: CalendarDate;
+  isUnavailable?: boolean;
 }) {
-  let ref = useRef(null);
+  const ref = useRef(null);
 
-  let {
-    cellProps,
-    buttonProps,
-    isSelected,
-    isOutsideVisibleRange,
-    isDisabled,
-    isUnavailable,
-    formattedDate,
-  } = useCalendarCell({ date }, state, ref);
+  const { cellProps, buttonProps, isSelected, isDisabled, formattedDate } =
+    useCalendarCell({ date }, state, ref);
 
   const { focusProps, isFocusVisible } = useFocusRing();
 
@@ -46,12 +41,12 @@ export function CalendarCell({
         ref={ref}
         hidden={isOutofMonth}
         className={cn(
-          "size-10 sm:size-12 outline-none group rounded-md flex items-center justify-center text-sm font-semibold transition-colors hover:bg-primary/10 hover:cursor-pointer",
+          "size-10 sm:size-12 outline-none group rounded-md flex items-center justify-center text-sm font-semibold transition-colors hover:bg-primary/10",
           isSelected &&
             "bg-blue-500 text-white hover:bg-blue-600 focus:bg-blue-600",
-          isDisabled && "opacity-50 cursor-not-allowed",
-          isUnavailable && "text-gray-400 line-through",
-          isOutsideVisibleRange && "text-gray-300"
+          isDisabled && "opacity-50 cursor-not-allowed pointer-events-none",
+          isUnavailable &&
+            "text-gray-400 line-through cursor-not-allowed  pointer-events-none"
         )}
       >
         {formattedDate}

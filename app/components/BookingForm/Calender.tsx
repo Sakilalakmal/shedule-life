@@ -6,16 +6,20 @@ import { createCalendar } from "@internationalized/date";
 import { CalendarHeader } from "./CalenderHeader";
 import { CalendarGrid } from "./CalendarGrid";
 
-export function Calender(props: CalendarProps<DateValue>) {
+export function Calender(
+  props: CalendarProps<DateValue> & {
+    isDataUnavailable?: (date: DateValue) => boolean;
+  }
+) {
   const { locale } = useLocale();
-  let state = useCalendarState({
+  const state = useCalendarState({
     ...props,
     visibleDuration: { months: 1 },
     locale,
     createCalendar,
   });
 
-  let { calendarProps, prevButtonProps, nextButtonProps, title } = useCalendar(
+  const { calendarProps, prevButtonProps, nextButtonProps, title } = useCalendar(
     props,
     state
   );
@@ -31,7 +35,10 @@ export function Calender(props: CalendarProps<DateValue>) {
       />
 
       <div className="flex gap-8">
-        <CalendarGrid state={state} />
+        <CalendarGrid
+          state={state}
+          isDataUnavailable={props.isDataUnavailable}
+        />
       </div>
     </div>
   );
