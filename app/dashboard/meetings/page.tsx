@@ -46,7 +46,7 @@ export default async function MeetingsPage() {
   const userId = session.user?.id as string;
 
   const data = await getData(userId);
-  console.log(data.data[0].when);
+  console.log(data.data[0]?.when);
 
   return (
     <>
