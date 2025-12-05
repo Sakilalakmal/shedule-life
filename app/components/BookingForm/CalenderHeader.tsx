@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { DOMAttributes } from "react";
 import { type CalendarState } from "react-stately";
 import { useDateFormatter, type AriaButtonProps } from "react-aria";
@@ -11,7 +12,6 @@ export function CalendarHeader({
   calendarProps,
   prevButtonProps,
   nextButtonProps,
-  title,
 }: {
   state: CalendarState;
   calendarProps: DOMAttributes<HTMLDivElement>;

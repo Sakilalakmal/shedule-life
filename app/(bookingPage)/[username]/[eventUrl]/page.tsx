@@ -1,4 +1,3 @@
-import { Calender } from "@/app/components/BookingForm/Calender";
 import { RenderCalender } from "@/app/components/BookingForm/RendercalendarFile";
 import { prisma } from "@/app/lib/db";
 import { Card, CardContent } from "@/components/ui/card";
@@ -49,16 +48,22 @@ type Params = { username: string; eventUrl: string };
 
 export default async function BookingFormPage({
   params,
+  searchParams,
 }: {
   params: Promise<Params>;
+  searchParams?: Promise<{ date?: string }>;
 }) {
   const { username, eventUrl } = await params;
+  const resolvedSearchParams = await searchParams;
   const data = await getData(eventUrl, username);
+
+  // Let the client component handle date parsing to avoid hydration mismatch
+  const selectedDateParam = resolvedSearchParams?.date;
 
   return (
     <div className="min-h-screen w-screen flex items-center justify-center">
       <Card className="max-w-[1000px] w-full mx-auto p-4">
-        <CardContent className="p-5 flex flex-col gap-8 md:grid md:grid-cols-[1fr_auto_1fr] md:gap-x-6 md:items-stretch">
+        <CardContent className="p-5 flex flex-col gap-8 md:grid md:grid-cols-[1fr_auto_1fr_auto_1fr] md:gap-x-6 md:items-stretch">
           {/* Booking form content goes here */}
 
           <div>
@@ -81,7 +86,9 @@ export default async function BookingFormPage({
               <p className="flex items-center">
                 <Calendar1Icon className="size-4 mr-2" />
                 <span className="text-sm font-medium text-muted-foreground">
-                  23.sept.2025
+                  {selectedDateParam
+                    ? new Date(selectedDateParam).toLocaleDateString()
+                    : new Date().toLocaleDateString()}
                 </span>
               </p>
 
@@ -107,8 +114,13 @@ export default async function BookingFormPage({
           />
 
           <div className="md:h-full">
-            <RenderCalender />
+            <RenderCalender availability={data.User.availability} />
           </div>
+
+          <Separator
+            orientation="vertical"
+            className="hidden md:block h-full w-px bg-border"
+          />
         </CardContent>
       </Card>
     </div>

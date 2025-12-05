@@ -3,22 +3,24 @@ import {
   endOfMonth,
   getWeeksInMonth,
 } from "@internationalized/date";
-import { useCalendarGrid, useLocale } from "react-aria";
+import { DateValue, useCalendarGrid, useLocale } from "react-aria";
 import { CalendarState } from "react-stately";
 import { CalendarCell } from "./CalendarCell";
 
 export function CalendarGrid({
   state,
   offset = {},
+  isDataUnavailable,
 }: {
   state: CalendarState;
   offset?: DateDuration;
+  isDataUnavailable?: (date: DateValue) => boolean;
 }) {
   const startDate = state.visibleRange.start.add(offset);
   const endDate = endOfMonth(startDate);
 
-  let { locale } = useLocale();
-  let { gridProps, headerProps, weekDays } = useCalendarGrid(
+  const { locale } = useLocale();
+  const { gridProps, headerProps, weekDays } = useCalendarGrid(
     {
       startDate,
       endDate,
@@ -50,6 +52,7 @@ export function CalendarGrid({
                     date={date}
                     state={state}
                     currentMonth={startDate}
+                    isUnavailable={isDataUnavailable?.(date)}
                   />
                 ) : (
                   <td key={i} />
