@@ -295,7 +295,7 @@ export function SubmitButton({ text, variant, className }: SubmitButtonProps) {
             className={cn("w-full", className)}
           >
             <Loader className="size-4 animate-spin" />
-            Wait...
+            Wait a bit ...
           </Button>
         </>
       ) : (

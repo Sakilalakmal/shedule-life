@@ -243,3 +243,32 @@ export async function attendToMeeting(formData: FormData) {
 
   return redirect("/success");
 }
+
+export async function CancelMettingNylas(formData: FormData) {
+  const session = await requiredAuthUser();
+
+  const userData = await prisma.user.findUnique({
+    where: {
+      id: session.user?.id,
+    },
+    select: {
+      grantEmail: true,
+      grantId: true,
+    },
+  });
+
+  if (!userData) {
+    throw new Error("User not found");
+  }
+
+  const nylasData = await nylas.events.destroy({
+    eventId: formData.get("eventId") as string,
+    identifier: userData.grantId as string,
+    queryParams: {
+      calendarId: userData.grantEmail as string,
+      notifyParticipants: true,
+    },
+  });
+
+  revalidatePath("/dashboard/meetings");
+}
