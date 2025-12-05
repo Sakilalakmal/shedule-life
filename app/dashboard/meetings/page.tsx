@@ -16,6 +16,19 @@ import { Separator } from "@/components/ui/separator";
 import { format, fromUnixTime } from "date-fns";
 import { Video } from "lucide-react";
 
+// Type for Nylas event with proper when structure
+interface MeetingWhen {
+  startTime: number;
+  endTime: number;
+}
+
+// Type for Nylas conferencing with proper details structure
+interface MeetingConferencing {
+  details: {
+    url: string;
+  };
+}
+
 async function getData(userId: string) {
   const userData = await prisma.user.findUnique({
     where: {
@@ -76,20 +89,20 @@ export default async function MeetingsPage() {
                   <div>
                     <p className="text-muted-foreground text-sm">
                       {format(
-                        fromUnixTime(meeting.when.startTime),
+                        fromUnixTime((meeting.when as MeetingWhen).startTime),
                         "EEE, dd,MMM"
                       )}
                     </p>
                     <p className="text-muted-foreground text-xs pt-1">
-                      {format(fromUnixTime(meeting.when.startTime), "hh:mm a")}{" "}
-                      - {format(fromUnixTime(meeting.when.endTime), "hh:mm a")}
+                      {format(fromUnixTime((meeting.when as MeetingWhen).startTime), "hh:mm a")}{" "}
+                      - {format(fromUnixTime((meeting.when as MeetingWhen).endTime), "hh:mm a")}
                     </p>
 
                     <div className="flex items-center mt-1">
                       <Video className="size-4 mr-2" />
 
                       <a
-                        href={meeting.conferencing?.details.url}
+                        href={(meeting.conferencing as MeetingConferencing)?.details.url}
                         target="_blank"
                         className="text-xs text-blue-500 underline underline-offset-2"
                       >
