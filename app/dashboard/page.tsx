@@ -101,9 +101,11 @@ export default async function DashBoardPage() {
                             meetingUrl={`${process.env.NEXT_PUBLIC_URL}/${data.userName}/${event.url}`}
                           />
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Pen className="size-4" />
-                          Edit
+                        <DropdownMenuItem asChild>
+                          <Link href={`/dashboard/event/${event.id}`}>
+                            <Pen className="size-4" />
+                            Edit
+                          </Link>
                         </DropdownMenuItem>
                       </DropdownMenuGroup>
                       <DropdownMenuSeparator />
