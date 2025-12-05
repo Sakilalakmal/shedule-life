@@ -2,13 +2,7 @@
 import { Prisma } from "@/app/generated/prisma/client";
 import { prisma } from "@/app/lib/db";
 import { nylas } from "@/app/lib/nylas";
-import {
-  addMinutes,
-  format,
-  fromUnixTime,
-  isAfter,
-  parse,
-} from "date-fns";
+import { addMinutes, format, fromUnixTime, isAfter, parse } from "date-fns";
 import Link from "next/link";
 import { GetFreeBusyResponse, NylasResponse } from "nylas";
 
@@ -31,7 +25,8 @@ function calculateAvailableTimeSlots(
   console.log("=== DEBUGGING TIME SLOTS ===");
   const now = new Date();
   const selectedDate = new Date(date);
-  const isToday = format(selectedDate, "yyyy-MM-dd") === format(now, "yyyy-MM-dd");
+  const isToday =
+    format(selectedDate, "yyyy-MM-dd") === format(now, "yyyy-MM-dd");
 
   console.log("1. INPUT DATA:");
   console.log("   - Date:", date);
@@ -58,34 +53,53 @@ function calculateAvailableTimeSlots(
   );
 
   console.log("2. PARSED TIMES:");
-  console.log("   - Available from:", format(availableFrom, "yyyy-MM-dd HH:mm"));
-  console.log("   - Available till:", format(availableTill, "yyyy-MM-dd HH:mm"));
+  console.log(
+    "   - Available from:",
+    format(availableFrom, "yyyy-MM-dd HH:mm")
+  );
+  console.log(
+    "   - Available till:",
+    format(availableTill, "yyyy-MM-dd HH:mm")
+  );
 
-  const busySlots = nylasData.data[0] && 'timeSlots' in nylasData.data[0] 
-    ? nylasData.data[0].timeSlots.map((slot: any) => ({
-        start: fromUnixTime(slot.startTime),
-        end: fromUnixTime(slot.endTime),
-      }))
-    : [];
+  const busySlots =
+    nylasData.data[0] && "timeSlots" in nylasData.data[0]
+      ? nylasData.data[0].timeSlots.map((slot: any) => ({
+          start: fromUnixTime(slot.startTime),
+          end: fromUnixTime(slot.endTime),
+        }))
+      : [];
 
   console.log("3. BUSY SLOTS:");
   console.log("   - Count:", busySlots.length);
   busySlots.forEach((slot, i) => {
-    console.log(`   - Busy ${i + 1}: ${format(slot.start, "HH:mm")} - ${format(slot.end, "HH:mm")}`);
+    console.log(
+      `   - Busy ${i + 1}: ${format(slot.start, "HH:mm")} - ${format(
+        slot.end,
+        "HH:mm"
+      )}`
+    );
   });
 
   console.log("4. GENERATING ALL SLOTS:");
   const allSlots = [];
   let currentSlot = availableFrom;
   let slotCount = 0;
-  
+
   // Simplified loop - generate slots until we can't fit another duration
-  while (addMinutes(currentSlot, duration).getTime() <= availableTill.getTime()) {
+  while (
+    addMinutes(currentSlot, duration).getTime() <= availableTill.getTime()
+  ) {
     allSlots.push(currentSlot);
-    console.log(`   - Slot ${slotCount + 1}: ${format(currentSlot, "HH:mm")} - ${format(addMinutes(currentSlot, duration), "HH:mm")}`);
+    console.log(
+      `   - Slot ${slotCount + 1}: ${format(currentSlot, "HH:mm")} - ${format(
+        addMinutes(currentSlot, duration),
+        "HH:mm"
+      )}`
+    );
     currentSlot = addMinutes(currentSlot, duration);
     slotCount++;
-    
+
     // Safety check to prevent infinite loops
     if (slotCount > 50) {
       console.log("   - BREAKING: Too many slots generated (safety check)");
@@ -95,7 +109,10 @@ function calculateAvailableTimeSlots(
 
   console.log("5. ALL GENERATED SLOTS:");
   console.log("   - Total count:", allSlots.length);
-  console.log("   - Slots:", allSlots.map((slot) => format(slot, "HH:mm")).join(", "));
+  console.log(
+    "   - Slots:",
+    allSlots.map((slot) => format(slot, "HH:mm")).join(", ")
+  );
 
   console.log("6. FILTERING SLOTS:");
   const freeSlots = allSlots.filter((slot, index) => {
@@ -107,31 +124,41 @@ function calculateAvailableTimeSlots(
     // Only filter by current time if it's today
     const isFutureSlot = isToday ? isAfter(slot, now) : true;
     console.log(`     * Is future slot: ${isFutureSlot} (isToday: ${isToday})`);
-    
+
     if (isToday && !isFutureSlot) {
-      console.log(`     * REJECTED: Past time (current: ${format(now, "HH:mm")})`);
+      console.log(
+        `     * REJECTED: Past time (current: ${format(now, "HH:mm")})`
+      );
       return false;
     }
 
     const isNotBusy = !busySlots.some((busy: { start: any; end: any }) => {
       const hasOverlap = slot < busy.end && slotEnd > busy.start;
       if (hasOverlap) {
-        console.log(`     * CONFLICT with busy slot: ${format(busy.start, "HH:mm")} - ${format(busy.end, "HH:mm")}`);
+        console.log(
+          `     * CONFLICT with busy slot: ${format(
+            busy.start,
+            "HH:mm"
+          )} - ${format(busy.end, "HH:mm")}`
+        );
       }
       return hasOverlap;
     });
-    
+
     console.log(`     * Is not busy: ${isNotBusy}`);
 
     const isAccepted = isFutureSlot && isNotBusy;
     console.log(`     * RESULT: ${isAccepted ? "ACCEPTED" : "REJECTED"}`);
-    
+
     return isAccepted;
   });
 
   console.log("7. FINAL RESULT:");
   console.log("   - Free slots count:", freeSlots.length);
-  console.log("   - Free slots:", freeSlots.map((slot) => format(slot, "HH:mm")).join(", "));
+  console.log(
+    "   - Free slots:",
+    freeSlots.map((slot) => format(slot, "HH:mm")).join(", ")
+  );
   console.log("=== END DEBUGGING ===");
 
   return freeSlots.map((slot) => format(slot, "HH:mm"));
