@@ -1,4 +1,5 @@
 import { RenderCalender } from "@/app/components/BookingForm/RendercalendarFile";
+import { TimeTable } from "@/app/components/BookingForm/TimeTable";
 import { prisma } from "@/app/lib/db";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -63,7 +64,7 @@ export default async function BookingFormPage({
   return (
     <div className="min-h-screen w-screen flex items-center justify-center">
       <Card className="max-w-[1000px] w-full mx-auto p-4">
-        <CardContent className="p-5 flex flex-col gap-8 md:grid md:grid-cols-[1fr_auto_1fr_auto_1fr] md:gap-x-6 md:items-stretch">
+        <CardContent className="p-5 flex flex-col gap-8  md:grid md:grid-cols-[1fr_auto_1fr_auto_1fr] md:gap-x-6 md:items-stretch">
           {/* Booking form content goes here */}
 
           <div>
@@ -121,6 +122,12 @@ export default async function BookingFormPage({
             orientation="vertical"
             className="hidden md:block h-full w-px bg-border"
           />
+          <div className="md:h-full">
+            <TimeTable
+              selectedDate={selectedDateParam ?? new Date().toISOString()}
+              username={username}
+            />
+          </div>
         </CardContent>
       </Card>
     </div>
