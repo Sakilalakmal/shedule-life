@@ -300,3 +300,41 @@ export async function EditEventType(prevState: any, formData: FormData) {
 
   return redirect("/dashboard");
 }
+
+export async function UpdateEventTypeStatusAction(
+  prevState: any,
+  {
+    eventTypeId,
+    isActive,
+  }: {
+    eventTypeId: string;
+    isActive: boolean;
+  }
+) {
+  try {
+    const session = await requiredAuthUser();
+
+    const data = await prisma.eventType.update({
+      where: {
+        id: eventTypeId,
+        userId: session.user?.id,
+      },
+      data: {
+        active: isActive,
+      },
+    });
+
+    revalidatePath("/dashboard");
+
+    return {
+      status: "success",
+      message: "Event type status updated",
+    };
+  } catch (error) {
+    console.error("Error updating event type status:", error);
+    return {
+      status: "error",
+      message: "Failed to update event type status",
+    };
+  }
+}
