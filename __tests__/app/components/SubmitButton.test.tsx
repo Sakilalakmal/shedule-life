@@ -42,7 +42,7 @@ describe('SubmitButton Component', () => {
     expect(button).toBeInTheDocument()
     expect(button).toBeDisabled()
     expect(screen.getByTestId('loader-icon')).toBeInTheDocument()
-    expect(screen.getByText('Wait...')).toBeInTheDocument()
+    expect(screen.getByText('Wait a bit ...')).toBeInTheDocument()
   })
 
   it('applies different variants', () => {
