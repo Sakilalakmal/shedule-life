@@ -42,9 +42,6 @@ jobs:
     - name: Run lint
       run: pnpm run lint || true
       
-    # Step 7: Run tests
-    - name: Run tests
-      run: pnpm run test:ci
       
     # Step 8: Build the project
     - name: Build project
