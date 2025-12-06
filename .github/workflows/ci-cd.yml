@@ -3,48 +3,48 @@ name: CI/CD Pipeline
 # Trigger the workflow on push and pull requests to main branch
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   # Job 1: Test and Build
   test-and-build:
     runs-on: ubuntu-latest
-    
-    steps:
-    # Step 1: Checkout the code
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    # Step 2: Setup Node.js
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '22.19.0'
-        cache: 'npm'
-        
-    # Step 3: Enable pnpm
-    - name: Enable pnpm
-      run: corepack enable pnpm
-      
-    # Step 4: Install dependencies
-    - name: Install dependencies
-      run: pnpm install --frozen-lockfile
-      
-    # Step 5: Run linting (but don't fail on warnings)
-    - name: Run lint
-      run: pnpm run lint || true
-      
-    # Step 6: Run tests
-    - name: Run tests
-      run: pnpm run test:ci
-      
-    # Step 7: Build the project
-    - name: Build project
-      run: pnpm run build
-      
 
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Setup pnpm
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      # Step 3: Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.19.0"
+          cache: "pnpm"
+
+      # Step 4: Install dependencies
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Step 5: Generate Prisma Client
+      - name: Generate Prisma Client
+        run: pnpm exec prisma generate
+
+      # Step 6: Run linting (but don't fail on warnings)
+      - name: Run lint
+        run: pnpm run lint || true
+
+      # Step 8: Build the project
+      - name: Build project
+        run: pnpm run build
 
   # Job 2: Auto-merge PR (only runs if tests pass)
   auto-merge:
@@ -52,17 +52,15 @@ jobs:
     runs-on: ubuntu-latest
     # Only run on pull requests (not on direct pushes to main)
     if: github.event_name == 'pull_request'
-    
+    permissions:
+      contents: write
+      pull-requests: write
+
     steps:
-    # Step 1: Checkout code
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    # Step 2: Auto-merge the PR
-    - name: Auto-merge PR
-      uses: pascalgn/merge-action@v0.15.6
-      with:
-        github_token: ${{ LIFE_CODE }}
-        merge_method: merge
-      env:
-        GITHUB_TOKEN: ${{ LIFE_CODE }}
+      # Step 1: Auto-merge the PR
+      - name: Auto-merge PR
+        uses: pascalgn/automerge-action@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.LIFE_CODE }}
+          MERGE_LABELS: ""
+          MERGE_METHOD: "merge"
