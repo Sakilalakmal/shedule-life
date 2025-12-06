@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { url } from "inspector";
 import { CopyLink } from "../components/CopyLink";
+import { EventTypeSwitch } from "../components/EventTypeSwitch";
 
 async function getData(userId: string) {
   const data = await prisma.user.findUnique({
@@ -132,9 +133,18 @@ export default async function DashBoardPage() {
                   </div>
                 </Link>
                 <div className=" px-5 py-3 justify-between items-center flex">
-                  <Switch />
+                  <EventTypeSwitch
+                    initialChecked={event.active}
+                    eventTypeId={event.id}
+                  />
 
-                  <Button>Edit Event</Button>
+                  <Link
+                    href={`/dashboard/event/${event.id}`}
+                    className={buttonVariants()}
+                  >
+                    <Pen className="size-4" />
+                    Edit
+                  </Link>
                 </div>
               </div>
             ))}
