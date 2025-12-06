@@ -17,30 +17,36 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    # Step 2: Setup Node.js
+    # Step 2: Setup pnpm
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 9
+        
+    # Step 3: Setup Node.js
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '22.19.0'
-        cache: 'npm'
-        
-    # Step 3: Enable pnpm
-    - name: Enable pnpm
-      run: corepack enable pnpm
+        cache: 'pnpm'
       
     # Step 4: Install dependencies
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
       
-    # Step 5: Run linting (but don't fail on warnings)
+    # Step 5: Generate Prisma Client
+    - name: Generate Prisma Client
+      run: pnpm exec prisma generate
+      
+    # Step 6: Run linting (but don't fail on warnings)
     - name: Run lint
       run: pnpm run lint || true
       
-    # Step 6: Run tests
+    # Step 7: Run tests
     - name: Run tests
       run: pnpm run test:ci
       
-    # Step 7: Build the project
+    # Step 8: Build the project
     - name: Build project
       run: pnpm run build
       
@@ -62,7 +68,7 @@ jobs:
     - name: Auto-merge PR
       uses: pascalgn/merge-action@v0.15.6
       with:
-        github_token: ${{ LIFE_CODE }}
+        github_token: ${{ secrets.LIFE_CODE }}
         merge_method: merge
       env:
-        GITHUB_TOKEN: ${{ LIFE_CODE }}
+        GITHUB_TOKEN: ${{ secrets.LIFE_CODE }}
