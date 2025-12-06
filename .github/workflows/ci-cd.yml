@@ -5,7 +5,23 @@ on:
   push:
     branches: [ main ]
   pull_request:
+    types:
+      - labeled
+      - unlabeled
+      - synchronize
+      - opened
+      - edited
+      - ready_for_review
+      - reopened
+      - unlocked
     branches: [ main ]
+  pull_request_review:
+    types:
+      - submitted
+  check_suite:
+    types:
+      - completed
+  status: {}
 
 jobs:
   # Job 1: Test and Build
@@ -42,6 +58,9 @@ jobs:
     - name: Run lint
       run: pnpm run lint || true
       
+    # Step 7: Run tests
+    - name: Run tests
+      run: pnpm run test:ci
       
     # Step 8: Build the project
     - name: Build project
@@ -60,9 +79,12 @@ jobs:
       pull-requests: write
     
     steps:
-    # Step 1: Enable auto-merge
-    - name: Enable auto-merge
-      run: gh pr merge --auto --merge "${{ github.event.pull_request.number }}"
+    # Step 1: Auto-merge the PR
+    - name: Auto-merge PR
+      uses: pascalgn/automerge-action@v0.16.4
       env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        GH_REPO: ${{ github.repository }}
+        GITHUB_TOKEN: "${{ secrets.LIFE_CODE }}"
+        MERGE_LABELS: ""
+        MERGE_METHOD: "merge"
+        MERGE_REQUIRED_APPROVALS: "0"
+        MERGE_DELETE_BRANCH: "false"
