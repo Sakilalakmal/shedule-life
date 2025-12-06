@@ -55,17 +55,14 @@ jobs:
     runs-on: ubuntu-latest
     # Only run on pull requests (not on direct pushes to main)
     if: github.event_name == 'pull_request'
+    permissions:
+      contents: write
+      pull-requests: write
     
     steps:
-    # Step 1: Checkout code
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    # Step 2: Auto-merge the PR
-    - name: Auto-merge PR
-      uses: pascalgn/merge-action@v0.15.6
-      with:
-        github_token: ${{ secrets.LIFE_CODE }}
-        merge_method: merge
+    # Step 1: Enable auto-merge
+    - name: Enable auto-merge
+      run: gh pr merge --auto --merge "${{ github.event.pull_request.number }}"
       env:
-        GITHUB_TOKEN: ${{ secrets.LIFE_CODE }}
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_REPO: ${{ github.repository }}
