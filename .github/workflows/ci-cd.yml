@@ -58,6 +58,7 @@ jobs:
     - name: Run lint
       run: pnpm run lint || true
 
+      
     # Step 8: Build the project
     - name: Build project
       run: pnpm run build
@@ -79,7 +80,7 @@ jobs:
     - name: Auto-merge PR
       uses: pascalgn/automerge-action@v0.16.4
       env:
-        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        GITHUB_TOKEN: "${{ secrets.LIFE_CODE }}"
         MERGE_LABELS: ""
         MERGE_METHOD: "merge"
         MERGE_REQUIRED_APPROVALS: "0"
