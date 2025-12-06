@@ -3,48 +3,70 @@ name: CI/CD Pipeline
 # Trigger the workflow on push and pull requests to main branch
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
-    branches: [main]
+    types:
+      - labeled
+      - unlabeled
+      - synchronize
+      - opened
+      - edited
+      - ready_for_review
+      - reopened
+      - unlocked
+    branches: [ main ]
+  pull_request_review:
+    types:
+      - submitted
+  check_suite:
+    types:
+      - completed
+  status: {}
 
 jobs:
   # Job 1: Test and Build
   test-and-build:
     runs-on: ubuntu-latest
-
+    
     steps:
-      # Step 1: Checkout the code
-      - name: Checkout code
-        uses: actions/checkout@v4
+    # Step 1: Checkout the code
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    # Step 2: Setup pnpm
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 9
+        
+    # Step 3: Setup Node.js
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22.19.0'
+        cache: 'pnpm'
+      
+    # Step 4: Install dependencies
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+      
+    # Step 5: Generate Prisma Client
+    - name: Generate Prisma Client
+      run: pnpm exec prisma generate
+      
+    # Step 6: Run linting (but don't fail on warnings)
+    - name: Run lint
+      run: pnpm run lint || true
+      
+    # Step 7: Run tests
+    - name: Run tests
+      run: pnpm run test:ci
+      
+    # Step 8: Build the project
+    - name: Build project
+      run: pnpm run build
+      
 
-      # Step 2: Setup pnpm
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      # Step 3: Setup Node.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22.19.0"
-          cache: "pnpm"
-
-      # Step 4: Install dependencies
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      # Step 5: Generate Prisma Client
-      - name: Generate Prisma Client
-        run: pnpm exec prisma generate
-
-      # Step 6: Run linting (but don't fail on warnings)
-      - name: Run lint
-        run: pnpm run lint || true
-
-      # Step 8: Build the project
-      - name: Build project
-        run: pnpm run build
 
   # Job 2: Auto-merge PR (only runs if tests pass)
   auto-merge:
@@ -55,13 +77,15 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-
+    
     steps:
-      # Step 1: Auto-merge the PR
-      - name: Auto-merge PR
-        uses: pascalgn/automerge-action@latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.LIFE_CODE }}
-          MERGE_LABELS: ""
-          MERGE_METHOD: "merge"
+    # Step 1: Auto-merge the PR
+    - name: Auto-merge PR
+      uses: pascalgn/automerge-action@v0.16.4
+      env:
+        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        MERGE_LABELS: ""
+        MERGE_METHOD: "merge"
+        MERGE_REQUIRED_APPROVALS: "0"
+        MERGE_DELETE_BRANCH: "false"
 
