@@ -64,3 +64,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.LIFE_CODE }}
           MERGE_LABELS: ""
           MERGE_METHOD: "merge"
+
