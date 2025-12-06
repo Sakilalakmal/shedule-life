@@ -83,7 +83,7 @@ jobs:
     - name: Auto-merge PR
       uses: pascalgn/automerge-action@v0.16.4
       env:
-        GITHUB_TOKEN: "${{ secrets.LIFE_CODE }}"
+        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         MERGE_LABELS: ""
         MERGE_METHOD: "merge"
         MERGE_REQUIRED_APPROVALS: "0"
