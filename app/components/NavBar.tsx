@@ -3,6 +3,7 @@ import Link from "next/link";
 import logo from "@/public/life.png";
 import { Button } from "@/components/ui/button";
 import { AuthModel } from "./AuthModel";
+import { ModeToggle } from "@/components/ThemeToggler";
 
 export function Navbar() {
   return (
@@ -15,7 +16,10 @@ export function Navbar() {
         </h4>
       </Link>
 
-      <AuthModel/>
+      <div className="hidden md:flex md:justify-end md:space-x-4">
+        <ModeToggle/>
+        <AuthModel />
+      </div>
     </div>
   );
 }
