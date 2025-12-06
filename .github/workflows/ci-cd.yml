@@ -34,15 +34,19 @@ jobs:
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
       
-    # Step 5: Run linting (but don't fail on warnings)
+    # Step 5: Generate Prisma Client
+    - name: Generate Prisma Client
+      run: pnpm exec prisma generate
+      
+    # Step 6: Run linting (but don't fail on warnings)
     - name: Run lint
       run: pnpm run lint || true
       
-    # Step 6: Run tests
+    # Step 7: Run tests
     - name: Run tests
       run: pnpm run test:ci
       
-    # Step 7: Build the project
+    # Step 8: Build the project
     - name: Build project
       run: pnpm run build
       
