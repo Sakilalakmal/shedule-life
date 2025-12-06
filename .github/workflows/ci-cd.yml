@@ -60,9 +60,10 @@ jobs:
       pull-requests: write
     
     steps:
-    # Step 1: Enable auto-merge
-    - name: Enable auto-merge
-      run: gh pr merge --auto --merge "${{ github.event.pull_request.number }}"
+    # Step 1: Auto-merge the PR
+    - name: Auto-merge PR
+      uses: pascalgn/automerge-action@v0.16.4
       env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        GH_REPO: ${{ github.repository }}
+        GITHUB_TOKEN: ${{ secrets.LIFE_CODE }}
+        MERGE_LABELS: ""
+        MERGE_METHOD: "merge"
