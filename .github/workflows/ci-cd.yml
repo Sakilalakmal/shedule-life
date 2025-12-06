@@ -59,7 +59,7 @@ jobs:
     steps:
       # Step 1: Auto-merge the PR
       - name: Auto-merge PR
-        uses: pascalgn/automerge-action@v0.16.4
+        uses: pascalgn/automerge-action@latest
         env:
           GITHUB_TOKEN: ${{ secrets.LIFE_CODE }}
           MERGE_LABELS: ""
