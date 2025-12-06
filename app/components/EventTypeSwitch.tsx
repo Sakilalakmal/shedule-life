@@ -3,7 +3,7 @@
 import { Switch } from "@/components/ui/switch";
 import { useFormState } from "react-dom";
 import { UpdateEventTypeStatusAction } from "../onboarding/actions";
-import { useEffect, useTransition, useRef } from "react";
+import { useEffect, useTransition, useRef, useActionState } from "react";
 import { toast } from "sonner";
 
 export function EventTypeSwitch({
@@ -14,7 +14,10 @@ export function EventTypeSwitch({
   eventTypeId: string;
 }) {
   const [isPending, startTransition] = useTransition();
-  const [state, action] = useFormState(UpdateEventTypeStatusAction, undefined);
+  const [state, action] = useActionState(
+    UpdateEventTypeStatusAction,
+    undefined
+  );
   const previousState = useRef<typeof state>(undefined);
 
   useEffect(() => {
