@@ -1,4 +1,5 @@
-<img width="1475" height="675" alt="schedule-life" src="https://github.com/user-attachments/assets/3c64d67c-a772-4f20-86f6-8cb96f04bb6b" />
+<img width="1475" height="675" alt="schedule-life" src="https://github.com/user-attachments/assets/f8b42b4b-044c-4ce8-b5f3-0597f514bf43" />
+
 
 
 # Intelligent Scheduling Platform - Schedule Life
